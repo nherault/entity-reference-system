@@ -1,6 +1,9 @@
-import { deepCopy } from '../class-utility/class-utility';
+import { deepCopy, reset } from '../class-utility/class-utility';
+import { PoolManager } from '../pool/pool';
 import { generateTypeEntityFromReference, isEntityReferenceExist } from './entity-reference-handler';
 import { EntitiesReference, EntityReferenceSystem } from './entity-reference-system.type';
+
+const DEFAULT_INITIAL_POOL_SIZE: number = 50;
 
 /**
  * TODO:
@@ -10,14 +13,16 @@ import { EntitiesReference, EntityReferenceSystem } from './entity-reference-sys
  * - Use Caching for isEntityReferenceExist
  * - Add PoolManager in the constructor (optional), so we can inject a new poolManager
  */
-export class EntityReferenceSystemDefault implements EntityReferenceSystem {
+export class EntityReferenceSystemPool implements EntityReferenceSystem {
 
     private entityReference: EntitiesReference;
-    private entityReferenceByType: any;
+    private entityReferenceByPoolType: any;
+    private poolManager: PoolManager;
 
     constructor() {
         this.entityReference = {};
-        this.entityReferenceByType = {};
+        this.entityReferenceByPoolType = {};
+        this.poolManager = new PoolManager();
     }
 
     /**
@@ -26,7 +31,11 @@ export class EntityReferenceSystemDefault implements EntityReferenceSystem {
      */
     public init(entityReference: EntitiesReference): EntityReferenceSystem {
         this.entityReference = deepCopy({}, entityReference);
-        this.generateEntityReferenceByType();
+
+        this.generatePools();
+        // TODO:
+        // - options to create pools and generate entityReferences?
+
         return this;
     }
 
@@ -36,7 +45,12 @@ export class EntityReferenceSystemDefault implements EntityReferenceSystem {
      */
     public add(entityReference: EntitiesReference): EntityReferenceSystem {
         this.entityReference = deepCopy(this.entityReference, [this.entityReference, entityReference]);
-        this.generateEntityReferenceByType();
+
+        this.generatePools();
+
+        // TODO:
+        // - options to create pools and generate entityReferences?
+
         return this;
     }
 
@@ -55,21 +69,27 @@ export class EntityReferenceSystemDefault implements EntityReferenceSystem {
      * @param entityId
      */
     public generateTypeEntityFromReference(entityType: string, entityId: string): any {
-        const type = this.generateType(entityType, entityId);
-        return JSON.parse(JSON.stringify(this.entityReferenceByType[type]));
+        const poolType = this.generatePoolType(entityType, entityId);
+        const objFromPool = this.poolManager.createAndGenerateId(poolType);
+        const id = objFromPool.id;
+        reset(this.entityReferenceByPoolType[poolType], objFromPool);
+        objFromPool.id = id;
+        return objFromPool;
     }
 
-    private generateEntityReferenceByType(): void {
+    private generatePools(): void {
+        this.poolManager.releaseAllPools();
         Object.keys(this.entityReference).forEach((entityType) => {
             Object.keys(this.entityReference[entityType]).forEach((entityId) => {
-                const type = this.generateType(entityType, entityId);
+                const poolType = this.generatePoolType(entityType, entityId);
                 const reference = generateTypeEntityFromReference(this.entityReference, entityType, entityId);
-                this.entityReferenceByType[type] = deepCopy({}, reference);
+                this.entityReferenceByPoolType[poolType] = deepCopy({}, reference);
+                this.poolManager.addPool(poolType, DEFAULT_INITIAL_POOL_SIZE, reference);
             });
         });
     }
 
-    private generateType(entityType: string, entityId: string): string {
+    private generatePoolType(entityType: string, entityId: string): string {
         return `${entityType}_${entityId}`;
     }
 }

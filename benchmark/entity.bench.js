@@ -39,25 +39,27 @@ const entitiesReference = {
 
 console.log(EntityReferenceSystem);
 
-const ers = new EntityReferenceSystem.EntityReferenceSystem();
-ers.init(entitiesReference);
+const ersd = new EntityReferenceSystem.EntityReferenceSystemDefault();
+ersd.init(entitiesReference);
+const ersp = new EntityReferenceSystem.EntityReferenceSystemPool();
+ersp.init(entitiesReference);
 
 // add tests
 suite
 .add('entityReferenceHandler.isEntityReferenceExist', () => {
     EntityReferenceSystem.isEntityReferenceExist(entitiesReference, "entityType1", "entityId1");
 })
-.add('ers.isEntityReferenceExist', () => {
-    ers.isEntityReferenceExist("entityType1", "entityId1");
+.add('ersd.isEntityReferenceExist', () => {
+    ersd.isEntityReferenceExist("entityType1", "entityId1");
 })
 .add('entityReferenceHandler.generateTypeEntityFromReference', () => {
     EntityReferenceSystem.generateTypeEntityFromReference(entitiesReference, "entityType2", "entityId1");
 })
-.add('ers.generateTypeEntityFromReferenceWithPool', () => {
-    ers.generateTypeEntityFromReferenceWithPool("entityType2", "entityId1");
+.add('ersp.generateTypeEntityFromReference', () => {
+    ersp.generateTypeEntityFromReference("entityType2", "entityId1");
 })
-.add('ers.generateTypeEntityFromReference', () => {
-    ers.generateTypeEntityFromReference("entityType2", "entityId1");
+.add('ersd.generateTypeEntityFromReference', () => {
+    ersd.generateTypeEntityFromReference("entityType2", "entityId1");
 })
 // add listeners
 .on('cycle', (event) => {

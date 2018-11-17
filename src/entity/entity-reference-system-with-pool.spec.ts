@@ -1,6 +1,6 @@
-import { EntityReferenceSystemDefault } from './entity-reference-system';
+import { EntityReferenceSystemPool } from './entity-reference-system-with-pool';
 
-describe('entity reference system', () => {
+describe('entity reference system with pool', () => {
 
     const entitiesReference = {
         entityType1: {
@@ -44,34 +44,34 @@ describe('entity reference system', () => {
         },
     };
 
-    const entityReferenceSystem: EntityReferenceSystemDefault = new EntityReferenceSystemDefault();
+    const entityReferenceSystemWithPool: EntityReferenceSystemPool = new EntityReferenceSystemPool();
 
     describe('init', () => {
         it('init', () => {
-            entityReferenceSystem.init(entitiesReference);
-            expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeFalsy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'entityId1')).toBeTruthy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'base')).toBeTruthy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType2', 'entityId1')).toBeTruthy();
+            entityReferenceSystemWithPool.init(entitiesReference);
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('toto', 'toto')).toBeFalsy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType1', 'entityId1')).toBeTruthy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType1', 'base')).toBeTruthy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType2', 'entityId1')).toBeTruthy();
         });
     });
 
     describe('add', () => {
         it('add', () => {
-            entityReferenceSystem.init(entitiesReference);
-            expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeFalsy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
-            entityReferenceSystem.add({ toto: { toto: { props1: 1 } } });
-            expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeTruthy();
-            expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
+            entityReferenceSystemWithPool.init(entitiesReference);
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('toto', 'toto')).toBeFalsy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
+            entityReferenceSystemWithPool.add({ toto: { toto: { props1: 1 } } });
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('toto', 'toto')).toBeTruthy();
+            expect(entityReferenceSystemWithPool.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
         });
     });
 
     describe('generateTypeEntityFromReference', () => {
         it('with extends and compose', () => {
-            entityReferenceSystem.init(entitiesReference);
-            expect(entityReferenceSystem.generateTypeEntityFromReference('entityType1', 'entityId2')).toEqual({
+            entityReferenceSystemWithPool.init(entitiesReference);
+            expect(entityReferenceSystemWithPool.generateTypeEntityFromReference('entityType1', 'entityId2')).toEqual({
                 composeOf: {
                     entityType1: {
                         member1: 'value1',
@@ -82,6 +82,7 @@ describe('entity reference system', () => {
                         member6: 'value6',
                     },
                 },
+                id: 0,
                 member1: 'value1',
                 member2: 'value2',
                 member3: 'value3',
@@ -90,8 +91,8 @@ describe('entity reference system', () => {
         });
 
         it('with extends and compose from another entity type', () => {
-            entityReferenceSystem.init(entitiesReference);
-            expect(entityReferenceSystem.generateTypeEntityFromReference('entityType2', 'entityId1')).toEqual({
+            entityReferenceSystemWithPool.init(entitiesReference);
+            expect(entityReferenceSystemWithPool.generateTypeEntityFromReference('entityType2', 'entityId1')).toEqual({
                 composeOf: {
                     entityType1: [{
                         member1: 'value1',
@@ -124,6 +125,7 @@ describe('entity reference system', () => {
                         member7: 'value7',
                     }],
                 },
+                id: 0,
                 member1: 'value1',
                 member2: 'value2',
                 member3: 'value3',
