@@ -27,7 +27,7 @@ var EntityReferenceSystemDefault = /** @class */ (function () {
      * @param entityReference
      */
     EntityReferenceSystemDefault.prototype.add = function (entityReference) {
-        this.entityReference = deepCopy(this.entityReference, [this.entityReference, entityReference]);
+        this.entityReference = deepCopy({}, [this.entityReference, entityReference], true);
         this.generateEntityReferenceByType();
         return this;
     };

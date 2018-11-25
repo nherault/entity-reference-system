@@ -16,6 +16,7 @@ describe('entity reference system', function () {
             entityId2: {
                 compose: 'entityId1',
                 extend: 'base',
+                member2: 'newValue2',
                 member7: 'value7',
             },
         },
@@ -60,6 +61,18 @@ describe('entity reference system', function () {
             entityReferenceSystem.add({ toto: { toto: { props1: 1 } } });
             expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeTruthy();
             expect(entityReferenceSystem.isEntityReferenceExist('entityType1', 'toto')).toBeFalsy();
+            entityReferenceSystem.add({ toto: { toto: { props1: 1 } } });
+            entityReferenceSystem.add({ toto: { toto: { props1: 1 } } });
+        });
+        it('multiple add', function () {
+            entityReferenceSystem.init(entitiesReference);
+            expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeFalsy();
+            entityReferenceSystem.add({ toto: { toto: { props1: 1, props2: [0, 1] } } });
+            expect(entityReferenceSystem.isEntityReferenceExist('toto', 'toto')).toBeTruthy();
+            entityReferenceSystem.add({ toto: { toto: { props1: 1, props2: [0, 1] } } });
+            entityReferenceSystem.add({ toto: { toto: { props1: 1, props2: [0, 1] } } });
+            expect(entityReferenceSystem.generateTypeEntityFromReference('toto', 'toto'))
+                .toEqual({ props1: 1, props2: [0, 1] });
         });
     });
     describe('generateTypeEntityFromReference', function () {
@@ -77,7 +90,7 @@ describe('entity reference system', function () {
                     },
                 },
                 member1: 'value1',
-                member2: 'value2',
+                member2: 'newValue2',
                 member3: 'value3',
                 member7: 'value7',
             });
@@ -112,7 +125,7 @@ describe('entity reference system', function () {
                                 },
                             },
                             member1: 'value1',
-                            member2: 'value2',
+                            member2: 'newValue2',
                             member3: 'value3',
                             member7: 'value7',
                         }],

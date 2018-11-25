@@ -35,7 +35,7 @@ export class EntityReferenceSystemDefault implements EntityReferenceSystem {
      * @param entityReference
      */
     public add(entityReference: EntitiesReference): EntityReferenceSystem {
-        this.entityReference = deepCopy(this.entityReference, [this.entityReference, entityReference]);
+        this.entityReference = deepCopy({}, [this.entityReference, entityReference], true);
         this.generateEntityReferenceByType();
         return this;
     }

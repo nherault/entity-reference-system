@@ -22,9 +22,9 @@ function addInherits(reference: EntitiesReference, type: string, entity: any) {
         const entityExtends = parseComposeExtends(type, entity.extend);
         entityExtends.forEach(() => {
             entity = {
-                ...entity,
                 ...entityExtends.reduce((acc, currExtends) =>
                     ({...acc, ...generateTypeEntityFromReference(reference, currExtends.type, currExtends.id)}), {}),
+                ...entity,
             };
         });
         delete entity.extend;
